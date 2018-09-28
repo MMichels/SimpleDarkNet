@@ -2,7 +2,6 @@ import cv2
 import numpy
 from random import randint
 
-
 class SimpleDarknet():
 
     @property
@@ -258,8 +257,8 @@ class SimpleDarknet():
         if self.modelo is not None and self.config is not None:
             try:
                 """Carrega a rede neural para a biblioteca opencv"""
-                #self._nat = cv2.dnn.readNetFromDarknet(self.config, self.modelo)
-                self._nat = cv2.dnn.readNet(self.modelo, self.config)
+                self._nat = cv2.dnn.readNetFromDarknet(cfgFile=self.config, darknetModel=self.modelo)
+                #self._nat = cv2.dnn.readNet(self.modelo, self.config)
                 """Utiliza Backend padrao"""
                 self._nat.setPreferableBackend(cv2.dnn.DNN_BACKEND_DEFAULT)
                 """Tenta utilizar o processamento da rede com o OPENCL"""

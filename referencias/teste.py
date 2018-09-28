@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 
 # read input image
-image = cv2.imread('teste_xv.jpg')
+image = cv2.imread('..\\imagens\\teste_xv.jpg')
 
 Width = image.shape[1]
 Height = image.shape[0]
@@ -10,14 +10,14 @@ scale = 0.00392
 
 # read class names from text file
 classes = None
-with open('yolo.txt', 'r') as f:
+with open('../classes/yolo.txt', 'r') as f:
     classes = [line.strip() for line in f.readlines()]
 
 # generate different colors for different classes
 COLORS = np.random.uniform(0, 255, size=(len(classes), 3))
 
 # read pre-trained model and config file
-net = cv2.dnn.readNet('yolov3.weights', 'yolov3.cfg')
+net = cv2.dnn.readNetFromDarknet(darknetModel='../weigths/yolov3.weights', cfgFile='../cfg/yolov3.cfg')
 
 # create input blob
 blob = cv2.dnn.blobFromImage(image, scale, (416, 416), (0, 0, 0), True, crop=False)

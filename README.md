@@ -6,6 +6,7 @@ Uma classe em Python desenvolvida com o objetivo de facilitar e abstrair o uso d
 `OpenCV 3.4.2: "pip install opencv-python"`     
 `No desenvolvimento e testes foram utilizados arquivos yolov2 e v3, projeto yolo está disponivel em: https://pjreddie.com/darknet/yolo/`
 
+**Para utilizar é necessario realizar o download dos arquivos weigths disponibilizados no site do projeto darknet**
 
 **Considerações**                   
 Este projeto é baseado em exemplos e tutoriais disponibilizados pelos desenvolvedores do projeto darknet e/ou desenvolvedores

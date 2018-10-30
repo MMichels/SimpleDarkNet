@@ -1,8 +1,12 @@
-import cv2
-import numpy
+from os.path import *
 from random import randint
 
-class SimpleDarknet():
+import cv2
+import numpy
+
+
+class SimpleDarknet:
+    #certo
 
     @property
     def img(self):
@@ -115,6 +119,9 @@ class SimpleDarknet():
         if not isinstance(arquivo_classes, str):
             raise TypeError('arquivo_classes deve ser uma variavel string '
                             'contendo o diretorio do arquivo  de classes.txt')
+        if not exists(arquivo_classes):
+            raise FileNotFoundError(f'Não foi possivel encontrar o arquivo {arquivo_classes}')
+        arquivo_classes = abspath(arquivo_classes)
         with open(arquivo_classes, 'rt') as f:
             self._classes = f.read().rstrip('\n').split('\n')
 
@@ -190,7 +197,7 @@ class SimpleDarknet():
                 deteccoes[][1] -> str da classe correspondente ao objeto detectado
                 deteccoes[][2] -> array contendo os valores de [x_centro, y_centro, largura, altura, x1, x2, y1, y2]
                 deteccoes[][3] -> cor randomizada pelo metodo desenhar_caixas()
-        :return: list() contendo as deteccoes calculadas pelo metodo localizar_deteccoes()
+        :return: list(list()) contendo as deteccoes calculadas pelo metodo localizar_deteccoes()
         """
         return self._deteccoes
 
@@ -206,7 +213,16 @@ class SimpleDarknet():
             raise TypeError('deteccoes deve ser um objeto da classe list()')
         self._deteccoes = value
 
-    def __init__(self, imagem=None, config=None, modelo=None, arquivo_classes=None):
+    @property
+    def isRunning(self):
+        return self._running
+
+    @isRunning.setter
+    def isRunning(self, value):
+        self._running = value
+
+    def __init__(self, imagem: str = None, config: str = None,
+                 modelo: str = None, arquivo_classes: str = None):
         """
             Construtor, Inicializa o objeto e configura os atributos que recebem valores.
         :param imagem: str contendo o diretorio da imagem que sera processada.
@@ -217,7 +233,7 @@ class SimpleDarknet():
         # Inicializa as variaveis privadas.
         self._nat = None
         self._previsoes = numpy.ndarray(0)
-        self._deteccoes = list()
+        self._deteccoes = list(list())
         self._img = numpy.ndarray(0)
         self._altura = int(0)
         self._largura = int(0)
@@ -226,6 +242,7 @@ class SimpleDarknet():
         self._classes = str('')
         self._blob = numpy.ndarray(0)
         self._taxa_min = float(0.5)
+        self._running = False
 
         if arquivo_classes is not None:
             self.classes = arquivo_classes
@@ -235,7 +252,6 @@ class SimpleDarknet():
             self.img = imagem
             self.config = config
             self.modelo = modelo
-            self.config_nat()
 
         # se o unico parametro com valor for a imagem, configura a imagem e exibe uma msg de aviso
         elif imagem is not None and config is None and modelo is None and arquivo_classes is None:
@@ -265,7 +281,7 @@ class SimpleDarknet():
                 self._nat.setPreferableTarget(cv2.dnn.DNN_TARGET_CPU)
 
             except Exception:
-                print('Erro ao configurar o modelo para a rede', Exception)
+                print('Erro ao configurar o modelo para a rede', Exception.args)
         else:
             raise Exception('modelo e cfg nao encontrados')
 
@@ -451,12 +467,15 @@ class SimpleDarknet():
             Realiza todos os metodos do processamento da imagem em sequencia
         :return: None
         """
+        self.isRunning = True
+        self.config_nat()
         self.config_blob()
         self.calc_previsoes()
         self.calc_metricas()
         self.localizar_deteccoes()
         self.desenhar_caixas()
         self.escrever_legendas()
+        self.isRunning = False
 
     def exibir_results(self):
         """
